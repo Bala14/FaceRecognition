@@ -1,13 +1,15 @@
+from PyQt5 import QtCore
 import face_recognition
 import cv2
 import numpy as np
 import sys
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import QApplication, QMainWindow, \
-    QPushButton, QVBoxLayout, QWidget
+    QPushButton, QSizePolicy, QStyle, QVBoxLayout, QWidget
 from PyQt5.QtWidgets import  QWidget, QLabel, QApplication
 from PyQt5.QtCore import QThread, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QFont, QImage, QPixmap
+from qt_material import apply_stylesheet
 
 class Thread(QThread):
     changePixmap = pyqtSignal(QImage)
@@ -128,7 +130,7 @@ class App(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.title = 'PyQt5 Video'
+        self.title = 'Fresenius Automated Check-In'
         self.left = 100
         self.top = 100
         self.width = 640
@@ -147,9 +149,19 @@ class App(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.resize(1800, 1200)
+
+        # create a label
+        self.header = QLabel(self)
+        self.header.setText("Welcome To Fresenius Clinic. This is an automated check-in App which will perform a facial recognition or barcode scanner to identify the patient.")
+        self.header.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.header.setAlignment(QtCore.Qt.AlignCenter)        
+        self.header.setProperty('class', 'success')
+        
+
         # create a label
         self.captureButton = QPushButton('Capture Image', self)
         self.captureButton.move(1000, 60)
+        self.captureButton.setProperty('class', 'success')
         self.captureButton.resize(200, 60)
         
         
@@ -167,11 +179,11 @@ class App(QWidget):
         th.capturedImage.connect(self.setCapturedImage)
         self.captureButton.clicked.connect(th.capture)
         th.start()        
-        
         self.show()
 
 if __name__ == '__main__':
     appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
-    ex = App()
+    ex = App()    
+    apply_stylesheet(appctxt.app, theme='dark_cyan.xml')
     exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
     sys.exit(exit_code)
